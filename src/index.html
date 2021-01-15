@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Phonebook</title>
+  </head>
+
+  <body>
+    <h1>Phonebook</h1>
+    <nav>
+      <form class="form-signup is-hidden">
+        <input
+          class="input-name-signup is-hidden"
+          type="text"
+          placeholder="Введите ваше имя"
+          name="name_signup"
+          autocomplete="off"
+        />
+        <input
+          type="text"
+          placeholder="Введите вашу почту"
+          name="email_signup"
+        />
+        <input type="password" placeholder="Введите пароль" name="psw_signup" />
+
+        <button type="submit" class="btn-form-signup is-hidden">Sign up</button>
+        <button type="submit" class="btn-form-login is-hidden">Login</button>
+      </form>
+
+      <button class="signup">Sign up</button>
+      <button class="login">Login</button>
+      <button class="logout">Logout</button>
+    </nav>
+
+    <div class="user-info">
+      <span class="name"></span> <br />
+      <span class="email"></span>
+    </div>
+
+    <content class="content is-hidden">
+      <form class="form">
+        <label>
+          <span>name</span>
+          <input type="text" name="name" />
+        </label>
+        <label>
+          <span>number</span>
+          <input type="tel" name="number" />
+        </label>
+        <button type="submit">Add</button>
+      </form>
+      <ul class="list"></ul>
+    </content>
+  </body>
+</html>
