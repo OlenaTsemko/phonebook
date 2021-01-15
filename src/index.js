@@ -120,19 +120,6 @@ function render() {
   });
 }
 
-function deleteContactHandler(event) {
-  const contactForDeleteId = event.target.dataset.id;
-
-  deleteContact(contactForDeleteId)
-    .then(
-      () =>
-        (allContacts = allContacts.filter(
-          contact => contact.id !== contactForDeleteId,
-        )),
-    )
-    .then(render);
-}
-
 const toggleClassList = {
   inputName: refs.formSignUp.querySelector('.input-name-signup'),
   btnFormSignup: refs.formSignUp.querySelector('.btn-form-signup'),
@@ -192,15 +179,17 @@ function signupHandler(event) {
     password: pswSignup,
   };
 
-  signUp(userDataSignup).then(({ user }) => {
-    refs.name.textContent = user.name;
-    refs.email.textContent = user.email;
+  signUp(userDataSignup)
+    .then(({ user }) => {
+      refs.name.textContent = user.name;
+      refs.email.textContent = user.email;
 
-    refs.formSignUp.classList.add('is-hidden');
-    refs.content.classList.remove('is-hidden');
+      refs.formSignUp.classList.add('is-hidden');
+      refs.content.classList.remove('is-hidden');
 
-    refs.formSignUp.reset();
-  });
+      refs.formSignUp.reset();
+    })
+    .then(loginFunc(userDataSignup));
 }
 
 function loginHandler(event) {
@@ -214,6 +203,10 @@ function loginHandler(event) {
     password: pswLogin,
   };
 
+  loginFunc(userDataLogin);
+}
+
+function loginFunc(userDataLogin) {
   login(userDataLogin)
     .then(({ user }) => {
       refs.name.textContent = user.name;
@@ -238,6 +231,7 @@ function logOutHandler() {
 
     refs.name.textContent = '';
     refs.email.textContent = '';
+    refs.contactList.innerHTML = '';
 
     toggleClassList.onClickBtnLogout();
 
@@ -261,4 +255,17 @@ function contactFormHandler(event) {
     .then(() => {
       refs.contactForm.reset();
     });
+}
+
+function deleteContactHandler(event) {
+  const contactForDeleteId = event.target.dataset.id;
+
+  deleteContact(contactForDeleteId)
+    .then(
+      () =>
+        (allContacts = allContacts.filter(
+          contact => contact.id !== contactForDeleteId,
+        )),
+    )
+    .then(render);
 }

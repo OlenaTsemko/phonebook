@@ -3,3 +3,10 @@
   "email": "elena.tsemko@email.com",
   "password": "1234567"
 }
+
+{
+  "name": "new_user",
+  "email": "new_user@mail.com",
+  "password": "1234567"
+}
+
