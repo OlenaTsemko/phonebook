@@ -1,12 +1,9 @@
 {
   "name": "Elena Tsemko",
   "email": "elena.tsemko@email.com",
-  "password": "1234567"
-}
+  "password": "1234567",
 
-{
-  "name": "new_user",
-  "email": "new_user@mail.com",
-  "password": "1234567"
+  "name1": "new_user",
+  "email1": "new_user@mail.com",
+  "password1": "1234567"
 }
-

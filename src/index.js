@@ -8,23 +8,8 @@ import {
   deleteContact,
   updateContact,
 } from './js/api';
-
-const refs = {
-  formSignUp: document.querySelector('.form-signup'),
-
-  // formLogin: document.querySelector('.form-login'),
-
-  btnSignUp: document.querySelector('.signup'),
-  btnLogin: document.querySelector('.login'),
-  btnLogout: document.querySelector('.logout'),
-
-  name: document.querySelector('.name'),
-  email: document.querySelector('.email'),
-
-  contactForm: document.querySelector('.form'),
-  contactList: document.querySelector('.list'),
-  content: document.querySelector('.content'),
-};
+import refs from './js/refs';
+import toggleClassList from './js/toggle-classlist';
 
 let allContacts = [];
 
@@ -112,7 +97,8 @@ function render() {
               .then(contact => (contact = { ...selectedContact, contact }))
               .then(getContacts)
               .then(data => (allContacts = data))
-              .then(render);
+              .then(render)
+              .catch(error => console.log(error));
           });
         }
       });
@@ -120,52 +106,23 @@ function render() {
   });
 }
 
-const toggleClassList = {
-  inputName: refs.formSignUp.querySelector('.input-name-signup'),
-  btnFormSignup: refs.formSignUp.querySelector('.btn-form-signup'),
-  btnFormLogin: refs.formSignUp.querySelector('.btn-form-login'),
-
-  onClickBtnSignup() {
-    this.inputName.classList.remove('is-hidden');
-    this.btnFormSignup.classList.remove('is-hidden');
-
-    refs.formSignUp.classList.remove('is-hidden');
-    refs.btnSignUp.classList.add('is-hidden');
-    refs.btnLogin.classList.add('is-hidden');
-  },
-
-  onClickBtnLogin() {
-    this.btnFormLogin.classList.remove('is-hidden');
-
-    refs.formSignUp.classList.remove('is-hidden');
-    refs.btnSignUp.classList.add('is-hidden');
-    refs.btnLogin.classList.add('is-hidden');
-  },
-
-  onClickBtnLogout() {
-    this.inputName.classList.add('is-hidden');
-    this.btnFormSignup.classList.add('is-hidden');
-    this.btnFormLogin.classList.add('is-hidden');
-    refs.content.classList.add('is-hidden');
-    refs.formSignUp.classList.add('is-hidden');
-    refs.btnSignUp.classList.remove('is-hidden');
-    refs.btnLogin.classList.remove('is-hidden');
-  },
-};
-
 refs.btnSignUp.addEventListener('click', () => {
   toggleClassList.onClickBtnSignup();
 
   refs.formSignUp.addEventListener('submit', signupHandler);
 });
+
 refs.btnLogin.addEventListener('click', () => {
   toggleClassList.onClickBtnLogin();
 
   refs.formSignUp.addEventListener('submit', loginHandler);
 });
+
 refs.btnLogout.addEventListener('click', logOutHandler);
+
 refs.contactForm.addEventListener('submit', contactFormHandler);
 
+/* ==================== CRUD ==================== */
 function signupHandler(event) {
   event.preventDefault();
 
@@ -189,7 +146,8 @@ function signupHandler(event) {
 
       refs.formSignUp.reset();
     })
-    .then(loginFunc(userDataSignup));
+    .then(loginFunc(userDataSignup))
+    .catch(error => console.log(error));
 }
 
 function loginHandler(event) {
@@ -219,26 +177,29 @@ function loginFunc(userDataLogin) {
     })
     .then(getContacts)
     .then(data => (allContacts = data))
-    .then(render);
+    .then(render)
+    .catch(error => console.log(error));
 }
 
 function logOutHandler() {
-  logout().then(data => {
-    if (data.message === 'Please authenticate') {
-      alert('Пожалуйста, войдите или зарегестрируйтесь');
-    }
-    // console.log(data);
+  logout()
+    .then(data => {
+      if (data.message === 'Please authenticate') {
+        alert('Пожалуйста, войдите или зарегестрируйтесь');
+      }
+      // console.log(data);
 
-    refs.name.textContent = '';
-    refs.email.textContent = '';
-    refs.contactList.innerHTML = '';
+      refs.name.textContent = '';
+      refs.email.textContent = '';
+      refs.contactList.innerHTML = '';
 
-    toggleClassList.onClickBtnLogout();
+      toggleClassList.onClickBtnLogout();
 
-    refs.formSignUp.removeEventListener('submit', signupHandler);
-    refs.formSignUp.removeEventListener('submit', loginHandler);
-    // refs.formSignUp.reset();
-  });
+      refs.formSignUp.removeEventListener('submit', signupHandler);
+      refs.formSignUp.removeEventListener('submit', loginHandler);
+      // refs.formSignUp.reset();
+    })
+    .catch(error => console.log(error));
 }
 
 function contactFormHandler(event) {
@@ -254,7 +215,8 @@ function contactFormHandler(event) {
     .then(render)
     .then(() => {
       refs.contactForm.reset();
-    });
+    })
+    .catch(error => console.log(error));
 }
 
 function deleteContactHandler(event) {
@@ -267,5 +229,6 @@ function deleteContactHandler(event) {
           contact => contact.id !== contactForDeleteId,
         )),
     )
-    .then(render);
+    .then(render)
+    .catch(error => console.log(error));
 }
