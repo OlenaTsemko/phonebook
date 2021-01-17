@@ -13,99 +13,6 @@ import toggleClassList from './js/toggle-classlist';
 
 let allContacts = [];
 
-function render() {
-  const contacts = allContacts
-    .map(contact => {
-      return `<li>
-    <span class="contact-name-${contact.id}">${contact.name}</span>: <span class="contact-number-${contact.id}">${contact.number}</span>
-    <button class="delete" data-id=${contact.id}>Delete</button>
-    <button class="add" data-id=${contact.id}>Update</button>
-    <div class="update-form-wrapper" data-id=${contact.id}></div> 
-    </li> `;
-    })
-    .join('');
-
-  refs.contactList.innerHTML = '';
-  refs.contactList.insertAdjacentHTML('beforeend', contacts);
-
-  const btnsDelete = refs.contactList.querySelectorAll('.delete');
-  const btnsAdd = refs.contactList.querySelectorAll('.add');
-  const formsUpdate = refs.contactList.querySelectorAll('.update-form-wrapper');
-
-  btnsDelete.forEach(btnDelete =>
-    btnDelete.addEventListener('click', deleteContactHandler),
-  );
-
-  btnsAdd.forEach(btnAdd => {
-    btnAdd.addEventListener('click', event => {
-      btnAdd.classList.add('is-hidden');
-      // console.dir(event.target);
-      const contactForAddId = event.target.dataset.id;
-      const markupUpdateForm = `
-        <input type="text" class="update-name" />
-        <input type="text" class="update-number" />
-        <button class="save">Save</button>
-      `;
-
-      const selectedContact = allContacts.find(
-        contact => contact.id === contactForAddId,
-      );
-
-      console.log('selectedContact', selectedContact);
-      // console.log('formsUpdate', formsUpdate);
-
-      formsUpdate.forEach(formUpdate => {
-        // console.log(formUpdate.dataset.id);
-
-        if (formUpdate.dataset.id === contactForAddId) {
-          const selectedFormUpdate = formUpdate;
-          // console.log('formUpdate', formUpdate);
-
-          selectedFormUpdate.insertAdjacentHTML('beforeend', markupUpdateForm);
-
-          const updateName = formUpdate.querySelector('.update-name');
-          const updateNumber = formUpdate.querySelector('.update-number');
-          const contactName = refs.contactList.querySelector(
-            `.contact-name-${contactForAddId}`,
-          );
-          const contactNumber = refs.contactList.querySelector(
-            `.contact-number-${contactForAddId}`,
-          );
-          const btnSave = formUpdate.querySelector('.save');
-          // console.log('contactName', contactName);
-          // console.log('contactNumber', contactNumber);
-
-          const fields = {};
-
-          updateName.addEventListener('input', event => {
-            const newName = updateName.value;
-            // console.log(newName);
-            contactName.textContent = newName;
-            fields.name = contactName.textContent;
-          });
-          updateNumber.addEventListener('input', event => {
-            const newNumber = updateNumber.value;
-            // console.log(newNumber);
-            contactNumber.textContent = newNumber;
-            fields.number = contactNumber.textContent;
-          });
-
-          btnSave.addEventListener('click', () => {
-            // console.log('fields', fields);
-
-            updateContact(contactForAddId, fields)
-              .then(contact => (contact = { ...selectedContact, contact }))
-              .then(getContacts)
-              .then(data => (allContacts = data))
-              .then(render)
-              .catch(error => console.log(error));
-          });
-        }
-      });
-    });
-  });
-}
-
 refs.btnSignUp.addEventListener('click', () => {
   toggleClassList.onClickBtnSignup();
 
@@ -146,8 +53,13 @@ function signupHandler(event) {
 
       refs.formSignUp.reset();
     })
-    .then(loginFunc(userDataSignup))
-    .catch(error => console.log(error));
+    .catch(error =>
+      error
+        ? alert(
+            'A user with the same email already exists! Please sign up with a different email!',
+          )
+        : loginFunc(userDataSignup),
+    );
 }
 
 function loginHandler(event) {
@@ -219,7 +131,40 @@ function contactFormHandler(event) {
     .catch(error => console.log(error));
 }
 
-function deleteContactHandler(event) {
+function render() {
+  const contacts = allContacts
+    .map(contact => {
+      return `<li>
+    <span class="contact-name-${contact.id}">${contact.name}</span>: <span class="contact-number-${contact.id}">${contact.number}</span>
+    <button class="delete" data-id=${contact.id}>Delete</button>
+    <button class="add" data-id=${contact.id}>Update</button>
+    <div class="update-form-wrapper" data-id=${contact.id}></div> 
+    </li> `;
+    })
+    .join('');
+
+  refs.contactList.innerHTML = '';
+  refs.contactList.insertAdjacentHTML('beforeend', contacts);
+
+  makeBtnsDeleteUpdate();
+}
+
+function makeBtnsDeleteUpdate() {
+  const btnsDelete = refs.contactList.querySelectorAll('.delete');
+  const btnsUpdate = refs.contactList.querySelectorAll('.add');
+
+  btnsDelete.forEach(btnDelete =>
+    btnDelete.addEventListener('click', btnDeleteContactHandler),
+  );
+
+  btnsUpdate.forEach(btnUpdate => {
+    btnUpdate.addEventListener('click', event =>
+      btnUpdateHandler(event, btnUpdate),
+    );
+  });
+}
+
+function btnDeleteContactHandler(event) {
   const contactForDeleteId = event.target.dataset.id;
 
   deleteContact(contactForDeleteId)
@@ -231,4 +176,64 @@ function deleteContactHandler(event) {
     )
     .then(render)
     .catch(error => console.log(error));
+}
+
+function btnUpdateHandler(event, btnUpdate) {
+  btnUpdate.classList.add('is-hidden');
+
+  const contactForAddId = event.target.dataset.id;
+  const markupUpdateForm = `
+        <input type="text" class="update-name" />
+        <input type="text" class="update-number" />
+        <button class="save">Save</button>
+      `;
+
+  const selectedContact = allContacts.find(
+    contact => contact.id === contactForAddId,
+  );
+
+  // console.log('selectedContact', selectedContact);
+  const formsUpdate = refs.contactList.querySelectorAll('.update-form-wrapper');
+
+  formsUpdate.forEach(formUpdate => {
+    if (formUpdate.dataset.id === contactForAddId) {
+      const selectedFormUpdate = formUpdate;
+
+      selectedFormUpdate.insertAdjacentHTML('beforeend', markupUpdateForm);
+
+      const updateName = formUpdate.querySelector('.update-name');
+      const updateNumber = formUpdate.querySelector('.update-number');
+      const contactName = refs.contactList.querySelector(
+        `.contact-name-${contactForAddId}`,
+      );
+      const contactNumber = refs.contactList.querySelector(
+        `.contact-number-${contactForAddId}`,
+      );
+      const btnSave = formUpdate.querySelector('.save');
+
+      const fields = {};
+
+      updateName.addEventListener('input', () => {
+        const newName = updateName.value;
+
+        contactName.textContent = newName;
+        fields.name = contactName.textContent;
+      });
+      updateNumber.addEventListener('input', () => {
+        const newNumber = updateNumber.value;
+
+        contactNumber.textContent = newNumber;
+        fields.number = contactNumber.textContent;
+      });
+
+      btnSave.addEventListener('click', () => {
+        updateContact(contactForAddId, fields)
+          .then(contact => (contact = { ...selectedContact, contact }))
+          .then(getContacts)
+          .then(data => (allContacts = data))
+          .then(render)
+          .catch(error => console.log(error));
+      });
+    }
+  });
 }
